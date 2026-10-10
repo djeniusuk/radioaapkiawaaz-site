@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radio Aapki Awaaz</title>
+<meta name="description" content="Radio Aapki Awaaz, Birmingham. The Voice of Our Community. Going live soon at radioaapkiawaaz.co.uk.">
+<meta name="theme-color" content="#07070a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Hind:wght@400;500&family=JetBrains+Mono:wght@500;800&display=swap">
+<style>
+  /* Layout: a dark broadcast control room. Status bar, logo over a live spectrum, one big line. Deliberately single dark look. */
+  :root {
+    --void: #07070a;
+    --panel: rgba(255,255,255,.04);
+    --rule: rgba(255,255,255,.12);
+    --text: #f3f1ee;
+    --muted: #a19d98;
+    --red: #e3161d;
+    --red-glow: rgba(227,22,29,.35);
+    --green: #17a447;
+    --green-glow: rgba(23,164,71,.28);
+    --display: "Archivo", "Arial Black", system-ui, sans-serif;
+    --body: "Hind", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--void); color: var(--text); }
+  body {
+    margin: 0;
+    min-height: 100%;
+    font: 400 1.0625rem/1.6 var(--body);
+    padding-inline: clamp(16px, 4vw, 40px);
+    padding-block: 0;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+  }
+  /* moving studio light + faint scanlines */
+  .bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .bg i { position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform; }
+  .bg i:nth-child(1) { width: 70vmax; height: 55vmax; left: -20vmax; top: -25vmax; background: radial-gradient(closest-side, rgba(227,22,29,.55), transparent); animation: driftA 22s ease-in-out infinite alternate; }
+  .bg i:nth-child(2) { width: 65vmax; height: 50vmax; right: -22vmax; bottom: -25vmax; background: radial-gradient(closest-side, rgba(23,164,71,.45), transparent); animation: driftB 26s ease-in-out infinite alternate; }
+  .bg i:nth-child(3) { width: 45vmax; height: 45vmax; left: 30%; top: 35%; background: radial-gradient(closest-side, rgba(227,22,29,.22), transparent); animation: driftC 30s ease-in-out infinite alternate; }
+  .bg i:nth-child(4) { width: 40vmax; height: 30vmax; right: 10%; top: -10vmax; background: radial-gradient(closest-side, rgba(23,164,71,.22), transparent); animation: driftD 24s ease-in-out infinite alternate; }
+  @keyframes driftA { to { transform: translate(28vw, 22vh) scale(1.15); } }
+  @keyframes driftB { to { transform: translate(-30vw, -24vh) scale(1.2); } }
+  @keyframes driftC { from { transform: translate(-25vw, 10vh) scale(.8); } to { transform: translate(20vw, -20vh) scale(1.25); } }
+  @keyframes driftD { to { transform: translate(-35vw, 40vh) scale(.9); } }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
+    z-index: 0;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 72rem; margin: 0 auto; }
+
+  /* status bar */
+  .bar {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+    gap: .5rem 1.5rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--rule);
+    font: 800 .74rem/1.2 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .clock { font-variant-numeric: tabular-nums; }
+
+  /* hero */
+  .hero {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding-block: clamp(2.5rem, 7vw, 5rem) clamp(2rem, 5vw, 3.5rem);
+    gap: clamp(1.25rem, 3vw, 2rem);
+  }
+  .status {
+    display: inline-flex; align-items: center;
+    height: 36px; padding: 0 calc(1.4rem - .16em) 0 1.4rem; /* trailing letter-spacing compensated so the text is optically centred */
+    border-radius: 999px;
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 .6rem 2rem var(--red-glow);
+    font: 800 .82rem/1 var(--display);
+    font-variation-settings: "wdth" 115;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .stage { position: relative; width: min(100%, 40rem); }
+  .logo {
+    position: relative; z-index: 2;
+    display: block; width: 100%; height: auto;
+    filter: drop-shadow(0 1.5rem 3rem rgba(0,0,0,.6));
+    animation: rise 1.2s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes rise { from { opacity: .4; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
+  .spectrum { display: block; width: 100%; height: clamp(70px, 14vw, 120px); margin-top: clamp(.5rem, 2vw, 1rem); }
+
+  h1 {
+    margin: 0;
+    max-width: 18ch;
+    font: 800 clamp(2.1rem, 7.2vw, 5.2rem)/.95 var(--display);
+    font-stretch: 125%;
+    font-variation-settings: "wdth" 125;
+    letter-spacing: -.02em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--red); }
+
+  @media (max-width: 760px) {
+    .bar { justify-content: center; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo, .bg i { animation: none; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <header class="bar">
+    <span>Radio Aapki Awaaz</span>
+    <span class="clock" id="clock">Birmingham · --:--:--</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="status">Going Live Soon</span>
+
+      <div class="stage">
+        <img class="logo" src="logo.webp" width="1400" height="870" alt="Radio Aapki Awaaz, The Voice of Our Community">
+        <canvas class="spectrum" id="spectrum" aria-hidden="true"></canvas>
+      </div>
+
+      <h1>Birmingham, we're <em>almost</em> on air</h1>
+    </section>
+  </main>
+</div>
+
+<script>
+  // Birmingham studio clock
+  (function () {
+    var el = document.getElementById('clock');
+    var fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZoneName: 'short' });
+    function tick() { el.textContent = 'Birmingham · ' + fmt.format(new Date()).replace(/\s?(GMT\+1)$/, ' BST'); }
+    tick(); setInterval(tick, 1000);
+  })();
+
+  // Live spectrum under the logo
+  (function () {
+    var c = document.getElementById('spectrum');
+    var ctx = c.getContext('2d');
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var w, h, n, vals = [];
+    function size() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = c.clientWidth; h = c.clientHeight;
+      c.width = w * dpr; c.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      n = Math.max(24, Math.floor(w / 9));
+      while (vals.length < n) vals.push(.2);
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, w, h);
+      var grad = ctx.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0, '#17a447');
+      grad.addColorStop(.5, '#f3f1ee');
+      grad.addColorStop(1, '#e3161d');
+      var gap = w / n, bw = Math.max(2, gap * .45), mid = h / 2;
+      for (var i = 0; i < n; i++) {
+        var x = i / (n - 1);
+        var env = Math.pow(Math.sin(Math.PI * x), 1.4);
+        var target = env * (.35 + .35 * Math.sin(t * .0021 + i * .55) * Math.sin(t * .0013 + i * .21) + .3 * Math.abs(Math.sin(t * .004 + i * 1.7)));
+        vals[i] += (Math.max(.04, target) - vals[i]) * .18;
+        var bh = vals[i] * (h * .48);
+        ctx.fillStyle = grad;
+        ctx.globalAlpha = .95;
+        ctx.fillRect(i * gap + (gap - bw) / 2, mid - bh, bw, bh);
+        ctx.globalAlpha = .22;
+        ctx.fillRect(i * gap + (gap - bw) / 2, mid + 2, bw, bh * .7);
+      }
+      ctx.globalAlpha = 1;
+      if (!still) requestAnimationFrame(draw);
+    }
+    size();
+    window.addEventListener('resize', size);
+    if (still) { for (var k = 0; k < 60; k++) draw(1200 + k * 16); } else requestAnimationFrame(draw);
+  })();
+</script>
+</body>
+</html>
