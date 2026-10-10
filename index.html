@@ -56,7 +56,8 @@
     background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
     z-index: 0;
   }
-  .wrap { position: relative; z-index: 1; max-width: 72rem; margin: 0 auto; }
+  .wrap { position: relative; z-index: 1; max-width: 72rem; margin: 0 auto; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+  main { flex: 1; display: flex; }
 
   /* status bar */
   .bar {
@@ -73,10 +74,14 @@
 
   /* hero */
   .hero {
+    flex: 1;
     display: flex; flex-direction: column; align-items: center; text-align: center;
-    padding-block: clamp(2.5rem, 7vw, 5rem) clamp(2rem, 5vw, 3.5rem);
+    padding-block: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 2.5rem);
     gap: clamp(1.25rem, 3vw, 2rem);
   }
+  /* logo + spectrum sit in the middle of the screen; headline and pill sit at the bottom */
+  .stage { margin-block: auto; }
+  .foot { display: flex; flex-direction: column; align-items: center; gap: clamp(.9rem, 2vw, 1.25rem); }
   .status {
     display: inline-flex; align-items: center;
     height: 36px; padding: 0 calc(1.4rem - .16em) 0 1.4rem; /* trailing letter-spacing compensated so the text is optically centred */
@@ -90,7 +95,7 @@
     text-transform: uppercase;
   }
 
-  .stage { position: relative; width: min(100%, 40rem); }
+  .stage { position: relative; width: min(100%, 40rem, 68vh); }
   .logo {
     position: relative; z-index: 2;
     display: block; width: 100%; height: auto;
@@ -102,8 +107,8 @@
 
   h1 {
     margin: 0;
-    max-width: 18ch;
-    font: 800 clamp(2.1rem, 7.2vw, 5.2rem)/.95 var(--display);
+    max-width: 24ch;
+    font: 800 clamp(1.3rem, 3.4vw, 2.4rem)/1 var(--display);
     font-stretch: 125%;
     font-variation-settings: "wdth" 125;
     letter-spacing: -.02em;
@@ -131,14 +136,15 @@
 
   <main>
     <section class="hero">
-      <span class="status">Going Live Soon</span>
-
       <div class="stage">
         <img class="logo" src="logo.webp" width="1400" height="870" alt="Radio Aapki Awaaz, The Voice of Our Community">
         <canvas class="spectrum" id="spectrum" aria-hidden="true"></canvas>
       </div>
 
-      <h1>Birmingham, we're <em>almost</em> on air</h1>
+      <div class="foot">
+        <h1>Birmingham, we're <em>almost</em> on air</h1>
+        <span class="status">Going Live Soon</span>
+      </div>
     </section>
   </main>
 </div>
