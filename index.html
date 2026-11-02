@@ -92,7 +92,7 @@
     text-transform: uppercase;
   }
 
-  .stage { position: relative; width: min(100%, 40rem, 68vh); }
+  .stage { position: relative; width: min(100%, 40rem, 62vh); }
   .logo {
     position: relative; z-index: 2;
     display: block; width: 100%; height: auto;
@@ -114,8 +114,40 @@
   }
   h1 em { font-style: normal; color: var(--red); }
 
+  /* listen live player */
+  .listen {
+    display: inline-flex; align-items: center; gap: .75rem;
+    height: 52px; padding: 0 1.5rem 0 .5rem;
+    border: 1px solid var(--rule); border-radius: 999px;
+    background: var(--panel);
+    color: var(--text);
+    font: 800 .9rem/1 var(--display);
+    font-variation-settings: "wdth" 115;
+    letter-spacing: .12em; text-transform: uppercase;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .listen:hover { border-color: rgba(255,255,255,.3); }
+  .listen:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+  .listen .ico {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--green); box-shadow: 0 0 0 0 var(--green-glow);
+  }
+  .listen .ico svg { width: 16px; height: 16px; fill: #fff; }
+  .listen .pause { display: none; }
+  .listen.on { border-color: var(--green); box-shadow: 0 0 2rem var(--green-glow); }
+  .listen.on .play { display: none; }
+  .listen.on .pause { display: block; }
+  .listen.on .ico { animation: pulse 1.6s ease-out infinite; }
+  .listen.wait .ico { animation: pulse .8s ease-out infinite; }
+  @keyframes pulse { to { box-shadow: 0 0 0 12px rgba(23,164,71,0); } }
+  .listen-note:empty { display: none; }
+  .listen-note { margin-top: -.4rem; font: 500 .72rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
   @media (prefers-reduced-motion: reduce) {
-    .logo, .bg i { animation: none; }
+    .logo, .bg i, .listen .ico { animation: none !important; }
   }
 </style>
 
@@ -136,6 +168,15 @@
 
       <div class="foot">
         <h1>Birmingham, we're <em>almost</em> on air</h1>
+        <button class="listen" id="listen" type="button" aria-pressed="false">
+          <span class="ico" aria-hidden="true">
+            <svg class="play" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>
+            <svg class="pause" viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>
+          </span>
+          <span id="listen-label">Listen Live</span>
+        </button>
+        <div class="listen-note" id="listen-note" role="status" aria-live="polite"></div>
+        <audio id="radio" preload="none"></audio>
         <span class="status">Going Live Soon</span>
       </div>
     </section>
@@ -149,6 +190,54 @@
     var fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZoneName: 'short' });
     function tick() { el.textContent = fmt.format(new Date()).replace(/\s?(GMT\+1)$/, ' BST'); }
     tick(); setInterval(tick, 1000);
+  })();
+
+  // Live radio player (Citrus3 stream)
+  (function () {
+    var STREAM = 'https://s3.citrus3.com:2000/8760/stream';
+    var btn = document.getElementById('listen');
+    var label = document.getElementById('listen-label');
+    var note = document.getElementById('listen-note');
+    var audio = document.getElementById('radio');
+    var timer;
+    function set(state, msg) {
+      btn.classList.toggle('on', state === 'on');
+      btn.classList.toggle('wait', state === 'wait');
+      btn.setAttribute('aria-pressed', state === 'on' ? 'true' : 'false');
+      label.textContent = state === 'on' ? 'Pause' : state === 'wait' ? 'Connecting' : 'Listen Live';
+      note.textContent = msg || '';
+      window.radioPlaying = state === 'on';
+    }
+    function start() {
+      set('wait');
+      // fresh URL each time so we join the live broadcast, not stale buffer
+      audio.src = STREAM + '?t=' + Date.now();
+      clearTimeout(timer);
+      timer = setTimeout(function () { if (btn.classList.contains('wait')) { stop(); note.textContent = 'Stream offline, try again shortly'; } }, 15000);
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (e) {
+        if (e.name === 'AbortError') return;
+        clearTimeout(timer);
+        set('off', e.name === 'NotAllowedError' ? 'Tap again to play' : 'Stream offline, try again shortly');
+      });
+    }
+    function stop() {
+      clearTimeout(timer);
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load(); // drops the connection so it stops downloading
+      set('off');
+    }
+    btn.addEventListener('click', function () { (audio.paused || !audio.src) ? start() : stop(); });
+    audio.addEventListener('playing', function () { clearTimeout(timer); set('on', 'On air now'); });
+    audio.addEventListener('waiting', function () { if (!audio.paused) set('wait'); });
+    audio.addEventListener('error', function () { if (audio.getAttribute('src')) { clearTimeout(timer); set('off', 'Stream offline, try again shortly'); } });
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: 'Live', artist: 'Radio Aapki Awaaz', album: 'Birmingham', artwork: [{ src: 'logo.webp', sizes: '1400x870', type: 'image/webp' }] });
+      navigator.mediaSession.setActionHandler('play', start);
+      navigator.mediaSession.setActionHandler('pause', stop);
+      navigator.mediaSession.setActionHandler('stop', stop);
+    }
   })();
 
   // Live spectrum under the logo
