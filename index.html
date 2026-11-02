@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Radio Aapki Awaaz</title>
-<meta name="description" content="Radio Aapki Awaaz, Birmingham. The Voice of Our Community. Going live soon at radioaapkiawaaz.co.uk.">
+<meta name="description" content="Radio Aapki Awaaz, Birmingham. The Voice of Our Community. Listen live at radioaapkiawaaz.co.uk.">
 <meta name="theme-color" content="#07070a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,17 +80,6 @@
   /* logo + spectrum sit in the middle of the screen; headline and pill sit at the bottom */
   .stage { margin-block: auto; }
   .foot { display: flex; flex-direction: column; align-items: center; gap: clamp(.9rem, 2vw, 1.25rem); }
-  .status {
-    display: inline-flex; align-items: center;
-    height: 36px; padding: 0 calc(1.4rem - .16em) 0 1.4rem; /* trailing letter-spacing compensated so the text is optically centred */
-    border-radius: 999px;
-    background: var(--red);
-    color: #fff;
-    font: 800 .82rem/1 var(--display);
-    font-variation-settings: "wdth" 115;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-  }
 
   .stage { position: relative; width: min(100%, 40rem, 62vh); }
   .logo {
@@ -167,7 +156,7 @@
       </div>
 
       <div class="foot">
-        <h1>Birmingham, we're <em>almost</em> on air</h1>
+        <h1>Birmingham, we're <em>live</em>.</h1>
         <button class="listen" id="listen" type="button" aria-pressed="false">
           <span class="ico" aria-hidden="true">
             <svg class="play" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>
@@ -177,7 +166,6 @@
         </button>
         <div class="listen-note" id="listen-note" role="status" aria-live="polite"></div>
         <audio id="radio" preload="none"></audio>
-        <span class="status">Going Live Soon</span>
       </div>
     </section>
   </main>
